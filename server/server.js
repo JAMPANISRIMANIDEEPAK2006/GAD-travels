@@ -1,0 +1,20 @@
+require('dotenv').config();
+const express = require('express'), mongoose = require('mongoose'), cors = require('cors'), http = require('http');
+const { Server } = require('socket.io');
+const app = express();
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+app.use(express.json());
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
+app.set('io', io);
+io.on('connection', s => s.on('track', id => s.join('bus:' + id)));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/buses', require('./routes/buses'));
+app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/geo', require('./routes/geo'));
+app.use((e, req, res, next) => { console.error(e); res.status(500).json({ message: e.message }); });
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  const p = process.env.PORT || 5000;
+  server.listen(p, () => console.log('GAD Travels API on :' + p));
+}).catch(e => console.error('Mongo error', e.message));
