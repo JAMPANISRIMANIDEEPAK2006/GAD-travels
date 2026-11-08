@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'; import { useParams } from 'react-router-dom';
-import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from 'react-leaflet'; import { io } from 'socket.io-client'; import api, { BASE } from '../api.js';
+import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from 'react-leaflet'; import { io } from 'socket.io-client'; import api from '../api.js';
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export default function Track() {
   const { id } = useParams(), [bus, setBus] = useState(null), [line, setLine] = useState([]), [pos, setPos] = useState(null);
   useEffect(() => {
